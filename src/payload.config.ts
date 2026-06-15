@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { sqliteD1Adapter } from '@payloadcms/db-d1-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { buildConfig } from 'payload'
+import { buildConfig, PayloadLogger } from 'payload'
 import { fileURLToPath } from 'url'
 import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
 import { GetPlatformProxyOptions } from 'wrangler'
@@ -12,6 +12,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
+import { defaultLexical } from './components/Field/config'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -38,7 +39,7 @@ const cloudflareLogger = {
   error: createLog('error', console.error),
   fatal: createLog('fatal', console.error),
   silent: () => {},
-} as any // Use PayloadLogger type when it's exported
+} as unknown as PayloadLogger // Use PayloadLogger type when it's exported
 
 const cloudflare =
   isCLI || !isProduction
@@ -53,12 +54,17 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Pages, Posts],
-  editor: lexicalEditor(),
+  // editor: lexicalEditor(),
+  editor: defaultLexical,
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: sqliteD1Adapter({ binding: cloudflare.env.D1 }),
+  db: sqliteD1Adapter({
+    binding: cloudflare.env.D1,
+    // https://payloadcms.com/docs/database/sqlite#d1-read-replicas
+    readReplicas: 'first-primary',
+  }),
   logger: isProduction ? cloudflareLogger : undefined,
   plugins: [
     r2Storage({

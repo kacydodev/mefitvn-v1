@@ -1,6 +1,72 @@
-import type { CollectionConfig } from 'payload'
-import { slugField } from 'payload'
+import { TwoColumn, ThreeColumn, FourColumn, SixColumn } from '@/blocks/Column/config'
+import { Link } from '@/components/Link/config'
+import type { CollectionConfig, Tab } from 'payload'
 
+const Hero: Tab = {
+  label: 'Hero',
+  fields: [
+    {
+      name: 'heroTitle',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'heroDescription',
+      type: 'textarea',
+      required: true,
+    },
+    {
+      name: 'cta',
+      type: 'group',
+      label: 'Call to Action',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'link',
+          type: 'blocks',
+          blocks: [Link],
+        },
+      ],
+    },
+    {
+      name: 'whatsNew',
+      type: 'group',
+      label: "What's New?",
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+        },
+        {
+          name: 'link',
+          type: 'blocks',
+          blocks: [Link],
+        },
+      ],
+    },
+    {
+      name: 'media',
+      type: 'upload',
+      relationTo: 'media',
+      required: true,
+    },
+  ],
+}
+
+const Content: Tab = {
+  label: 'Content',
+  fields: [
+    {
+      name: 'layout',
+      type: 'blocks',
+      blocks: [TwoColumn, ThreeColumn, FourColumn, SixColumn],
+    },
+  ],
+}
 export const Pages: CollectionConfig = {
   slug: 'pages',
   access: {
@@ -12,13 +78,13 @@ export const Pages: CollectionConfig = {
     update: ({ req: { user } }) => Boolean(user),
     delete: ({ req: { user } }) => Boolean(user),
   },
-  defaultPopulate: {
-    title: true,
-    slug: true,
-  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', '_status', 'updatedAt'],
+  },
+  defaultPopulate: {
+    // title: true,
+    slug: true,
   },
   versions: {
     drafts: {
@@ -29,23 +95,26 @@ export const Pages: CollectionConfig = {
     },
     maxPerDoc: 20,
   },
+  // slugField()
   fields: [
     {
       name: 'title',
       type: 'text',
-      required: true,
-    },
-    slugField(),
-    {
-      name: 'content',
-      type: 'richText',
+      defaultValue: 'New Page',
       required: true,
     },
     {
-      name: 'featuredImage',
-      type: 'upload',
-      relationTo: 'media',
+      type: 'tabs',
+      tabs: [Hero, Content],
+    },
+    {
+      name: 'slug',
+      type: 'text',
+      unique: true,
+      index: true,
+      admin: {
+        position: 'sidebar',
+      },
     },
   ],
-  timestamps: true,
 }

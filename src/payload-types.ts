@@ -178,30 +178,121 @@ export interface Media {
 export interface Page {
   id: number;
   title: string;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
+  heroTitle: string;
+  heroDescription: string;
+  cta: {
+    title: string;
+    link?: Link[] | null;
   };
-  featuredImage?: (number | null) | Media;
+  whatsNew?: {
+    title?: string | null;
+    link?: Link[] | null;
+  };
+  media: number | Media;
+  layout?:
+    | (
+        | {
+            title?: string | null;
+            column1: {
+              name: string;
+              description?: string | null;
+            };
+            column2: {
+              name: string;
+              description?: string | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'twoColumn';
+          }
+        | {
+            title?: string | null;
+            column1: {
+              name: string;
+              description?: string | null;
+            };
+            column2: {
+              name: string;
+              description?: string | null;
+            };
+            column3: {
+              name: string;
+              description?: string | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'threeColumn';
+          }
+        | {
+            title?: string | null;
+            column1: {
+              name: string;
+              description?: string | null;
+            };
+            column2: {
+              name: string;
+              description?: string | null;
+            };
+            column3: {
+              name: string;
+              description?: string | null;
+            };
+            column4: {
+              name: string;
+              description?: string | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'fourColumn';
+          }
+        | {
+            title?: string | null;
+            column1: {
+              name: string;
+              description?: string | null;
+            };
+            column2: {
+              name: string;
+              description?: string | null;
+            };
+            column3: {
+              name: string;
+              description?: string | null;
+            };
+            column4: {
+              name: string;
+              description?: string | null;
+            };
+            column5: {
+              name: string;
+              description?: string | null;
+            };
+            column6: {
+              name: string;
+              description?: string | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'sixColumn';
+          }
+      )[]
+    | null;
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Link".
+ */
+export interface Link {
+  type?: ('internal' | 'external') | null;
+  internalLink?: (number | null) | Page;
+  externalLink?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'link';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -456,13 +547,166 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
-  generateSlug?: T;
+  heroTitle?: T;
+  heroDescription?: T;
+  cta?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              link?: T | LinkSelect<T>;
+            };
+      };
+  whatsNew?:
+    | T
+    | {
+        title?: T;
+        link?:
+          | T
+          | {
+              link?: T | LinkSelect<T>;
+            };
+      };
+  media?: T;
+  layout?:
+    | T
+    | {
+        twoColumn?:
+          | T
+          | {
+              title?: T;
+              column1?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column2?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        threeColumn?:
+          | T
+          | {
+              title?: T;
+              column1?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column2?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column3?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        fourColumn?:
+          | T
+          | {
+              title?: T;
+              column1?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column2?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column3?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column4?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        sixColumn?:
+          | T
+          | {
+              title?: T;
+              column1?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column2?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column3?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column4?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column5?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              column6?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
   slug?: T;
-  content?: T;
-  featuredImage?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Link_select".
+ */
+export interface LinkSelect<T extends boolean = true> {
+  type?: T;
+  internalLink?: T;
+  externalLink?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
